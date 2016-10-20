@@ -1,0 +1,19 @@
+{
+  "name": "vieshow-crawler",
+  "version": "0.0.1",
+  "description": "nodejs crawler project",
+  "main": "crawler.js",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "express": "^4.14.0",
+    "js-crawler": "^0.3.11",
+    "lodash": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/index.js"
+  },
+  "author": "Olly Wang",
+  "license": "ISC"
+}
