@@ -6,12 +6,19 @@ var Theater = require('../src/theater.js');
 
 app.set('port', (process.env.PORT || 3000));
 
+// views is directory for all template files
+app.set('views', __dirname + '/../src/views');
+app.set('view engine', 'ejs');
+
+
 app.get('/', function (req, res) {
-  res.send('VIESHOW Cinemas Showtimes!');
+  res.render('index');
 });
+
 app.get('/theater', function (req, res) {
   res.json(Theater.getTheaters());
 });
+
 app.get('/theater/:theaterId', function (req, res) {
   var _theaterId = req.params.theaterId;
   var theaters = Theater.getTheaters();
