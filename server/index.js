@@ -1,8 +1,12 @@
 var express = require('express');
-var _ = require('lodash');
+var cors    = require('cors');
+var _       = require('lodash');
+
 var app = express();
 var TheaterList = require('../src/data/theater_list.js');
 var Theater = require('../src/theater.js');
+
+app.use(cors());
 
 app.set('port', (process.env.PORT || 3000));
 
