@@ -35,6 +35,9 @@ app.get('/theater/:theaterId', function (req, res) {
   }
 
 });
+app.get('/*', function (req, res) {
+  res.redirect('/');
+});
 
 app.listen(app.get('port'), function() {
   console.log('VIESHOW crawler now running on http://localhost:' + app.get('port'));
