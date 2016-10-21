@@ -23,6 +23,16 @@ app.get('/theater', function (req, res) {
   res.json(Theater.getTheaters());
 });
 
+app.get('/api/getListDicArea', function (req, res) {
+  Theater.getListDicArea().then(function (list, err) {
+    if (err) {
+      res.json([])
+    } else {
+      res.json(list);
+    }
+  });
+});
+
 app.get('/theater/:theaterId', function (req, res) {
   var _theaterId = req.params.theaterId;
   var theaters = Theater.getTheaters();
