@@ -1,6 +1,6 @@
-var theaterList = require('./data/theater_list.js');
+var theaterList    = require('./data/theater_list.js');
 var VieshowCrawler = require('./crawlers/vieshow.js');
-var Promise = require('promise');
+var Promise        = require('promise');
 
 var Theater = {
   init: function () {

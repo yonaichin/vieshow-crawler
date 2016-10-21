@@ -9,11 +9,10 @@ var VieshowCrawler = {
     var crawler = new Crawler();
     var promise = new Promise(function (resolve, reject) {
       crawler.crawl({
-        url: "http://www.vscinemas.com.tw/visPrintShowTimes.aspx?cid=" + _theaterId +"&visLang=2",
+        url: "http://www.vscinemas.com.tw/visPrintShowTimes.aspx?cid=" + _theaterId + "&visLang=2",
         success: function(page) {
           var html = page.content.toString();
           var $ = Cheerio.load(html);
-          // console.log('success', $('.PrintShowTimesFilm').parent().parent().html());
           var tables = $('.PrintShowTimesFilm').parent().parent().parent().find('table');
           var showtimes = [];
           _.map(tables, function(table, idx) {
