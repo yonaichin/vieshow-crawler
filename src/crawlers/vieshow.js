@@ -37,7 +37,7 @@ var VieshowCrawler = {
               'showtimesDay': showtimesDay
             });
           });
-          console.log("[VieshowCrawler] Success!");
+          console.log("[VieshowCrawler] Theater: %s, Success!", _theaterId);
           resolve(showtimes);
         },
         failure: function(page) {
