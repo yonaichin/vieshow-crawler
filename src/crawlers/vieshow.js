@@ -79,12 +79,16 @@ function _getShowtimesDay (table) {
   t = table.find('.PrintShowTimesDay');
   s = table.find('.PrintShowTimesSession');
   _.map(t, function(tmp, idx) {
+    var day = tmp.children[0].data
+    day = (new Date()).getFullYear() + '/' + day.split(' ')[0].replace(/月/g,'/').replace(/日/g,'')
+    var timestamp = (new Date(day)).getTime()
     showtimesDay[idx] = {
-      'day': tmp.children[0].data
+      'day': day,
+      'timestamp': timestamp
     }
   })
   _.map(s, function(tmp, idx) {
-    showtimesDay[idx].sessions =  tmp.children[0].data.split(',')
+    showtimesDay[idx].sessions =  tmp.children[0].data.replace(/ /g, '').split(',')
   })
   return showtimesDay
 }
