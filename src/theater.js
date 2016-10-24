@@ -19,6 +19,17 @@ var Theater = {
         }
       });
     })
+  },
+  getListDicArea: function () {
+    return new Promise (function (resolve, reject) {
+      VieshowCrawler.getListDicArea().then(function(res, err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+        }
+      });
+    })
   }
 }
 

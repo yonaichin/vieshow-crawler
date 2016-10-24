@@ -47,6 +47,30 @@ var VieshowCrawler = {
       });
     })
     return promise
+  },
+  getListDicArea: function () {
+    var crawler = new Crawler();
+    var promise = new Promise(function (resolve, reject) {
+      crawler.crawl({
+        url: "https://www.vscinemas.com.tw/api/GetLstDicArea/",
+        success: function(page) {
+          console.log('success');
+          var json = page.content.toString();
+          try {
+            json = JSON.parse(json)
+            resolve(json);
+          } catch (err) {
+            console.log('error: ', err);
+            reject([]);
+          }
+        },
+        failure: function(page) {
+          console.log("[VieshowCrawler] page status: ", page.status);
+          reject([]);
+        }
+      });
+    })
+    return promise
   }
 };
 
