@@ -1,6 +1,6 @@
 {
   "name": "vieshow-crawler",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "nodejs crawler project",
   "main": "crawler.js",
   "dependencies": {
@@ -10,7 +10,8 @@
     "express": "^4.14.0",
     "js-crawler": "^0.3.11",
     "lodash": "^4.16.4",
-    "promise": "^7.1.1"
+    "promise": "^7.1.1",
+    "sqlite3": "^3.1.6"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

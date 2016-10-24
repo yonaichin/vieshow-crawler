@@ -2,6 +2,10 @@ var express = require('express');
 var cors    = require('cors');
 var _       = require('lodash');
 
+var DB = require('../db/index.js');
+var Promise = require('promise');
+
+
 var app = express();
 var TheaterList = require('../src/data/theater_list.js');
 var Theater = require('../src/theater.js');
@@ -44,24 +48,42 @@ app.get('/theater/:theaterId', function (req, res) {
   });
 
   if (matchTheaters) {
-    Theater.getShowtimes(_theaterId).then(function (showtimes, err) {
-      if (err) {
-        res.json([])
-      } else {
-        res.json(showtimes);
-      }
+    DB.getShowtimes(req.params.theaterId).then(function(t) {
+      res.json(t);
     });
+    // Theater.getShowtimes(_theaterId).then(function (showtimes, err) {
+    //   if (err) {
+    //     res.json([])
+    //   } else {
+    //     res.json(showtimes);
+    //   }
+    // });
   } else {
     res.status(400).json({'error': "Theater id doesn't match the list."});
   }
 
 });
+// app.get('/db/:theaterId', function (req, res) {
+//
+//   DB.getShowtimes(req.params.theaterId).then(function(t) {
+//     res.json(t);
+//   });
+// });
+
 app.get('/*', function (req, res) {
   res.redirect('/');
 });
 
-app.listen(app.get('port'), function() {
-  console.log('VIESHOW crawler now running on http://localhost:' + app.get('port'));
-});
+
+
+Promise.resolve()
+  .then(function () {
+    DB.init();
+  })
+  .finally(function () {
+    app.listen(app.get('port'), function() {
+      console.log('VIESHOW crawler now running on http://localhost:' + app.get('port'));
+    });
+  })
 
 
