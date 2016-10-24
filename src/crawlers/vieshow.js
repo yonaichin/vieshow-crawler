@@ -18,7 +18,9 @@ var VieshowCrawler = {
           _.map(tables, function(table, idx) {
             var title = $(table).find('.PrintShowTimesFilm').text()
             var showtimesDay = _getShowtimesDay($(table));
+            var cinemaType = [];
             var rating = '';
+            var label = '';
             if (title.indexOf('普遍級') > 0) {
               rating = 'G';
             } else if (title.indexOf('保護級') > 0) {
@@ -31,11 +33,17 @@ var VieshowCrawler = {
               rating = 'R';
             }
             title = title.replace(/\(普遍級\)|\(保護級\)|\(輔12級\)|\(輔15級\)|\(限制級\)|/g, '');
-            console.log("title %s \n", title);
+
+            // filter cinemaType
+            label = title.split('\)')[0];
+            title = title.split('\)')[1].replace(/ /g, '');
+            cinemaType = _getCinemaType(label);
+
             showtimes.push({
               'title': title,
               'rating': rating,
-              'showtimesDay': showtimesDay
+              'showtimesDay': showtimesDay,
+              'cinemaType': _.uniq(cinemaType)
             });
           });
           console.log("[VieshowCrawler] Theater: %s, Success!", _theaterId);
@@ -92,6 +100,41 @@ function _getShowtimesDay (table) {
     showtimesDay[idx].sessions =  tmp.children[0].data.replace(/ /g, '').split(',')
   })
   return showtimesDay
+}
+
+function _getCinemaType (label) {
+  var cinemaType = [];
+  if (label.indexOf('數位') > 0) {
+    cinemaType.push('digital');
+  }
+  if (label.indexOf('3D') > 0) {
+    cinemaType.push('3d');
+  }
+  if (label.indexOf('4D') > 0) {
+    cinemaType.push('4d');
+  }
+  if (label.indexOf('4DX') > 0) {
+    cinemaType.push('4dx');
+    cinemaType = _.filter(cinemaType, function(n) {
+      return n !== '4d';
+    })
+  }
+  if (label.indexOf('IMAX') > 0) {
+      cinemaType.push('imax');
+  }
+  if (label.indexOf('GC') > 0) {
+    cinemaType.push('gc');
+  }
+  if (label.indexOf('MAPPA') > 0) {
+    cinemaType.push('mappa');
+  }
+  if (label.indexOf('國') > 0) {
+    cinemaType.push('chinese');
+  }
+  if (label.indexOf('英') > 0) {
+    cinemaType.push('english');
+  }
+  return cinemaType
 }
 
 module.exports = VieshowCrawler
