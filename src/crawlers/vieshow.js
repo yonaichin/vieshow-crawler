@@ -19,18 +19,19 @@ var VieshowCrawler = {
             var title = $(table).find('.PrintShowTimesFilm').text()
             var showtimesDay = _getShowtimesDay($(table));
             var rating = '';
-            if (title.indexOf('普遍級')) {
+            if (title.indexOf('普遍級') > 0) {
               rating = 'G';
-            } else if (title.indexOf('保護級')) {
+            } else if (title.indexOf('保護級') > 0) {
               rating = 'PG';
-            } else if (title.indexOf('輔12級')) {
+            } else if (title.indexOf('輔12級') > 0) {
               rating = 'PG 12';
-            } else if (title.indexOf('輔15級')) {
+            } else if (title.indexOf('輔15級') > 0) {
               rating = 'PG 15';
-            } else if (title.indexOf('限制級')) {
+            } else if (title.indexOf('限制級') > 0) {
               rating = 'R';
             }
             title = title.replace(/\(普遍級\)|\(保護級\)|\(輔12級\)|\(輔15級\)|\(限制級\)|/g, '');
+            console.log("title %s \n", title);
             showtimes.push({
               'title': title,
               'rating': rating,
