@@ -14,7 +14,7 @@ var VieshowCrawler = {
           var html = page.content.toString();
           var $ = Cheerio.load(html);
           var tables = $('.PrintShowTimesFilm').parent().parent().parent().find('table');
-          var showtimes = [];
+          var showtimes_c = [];
           _.map(tables, function(table, idx) {
             var title = $(table).find('.PrintShowTimesFilm').text()
             var showtimesDay = _getShowtimesDay($(table));
@@ -39,11 +39,53 @@ var VieshowCrawler = {
             title = title.split('\)')[1].replace(/ /g, '');
             cinemaType = _getCinemaType(label);
 
-            showtimes.push({
-              'title': title,
+            showtimes_c.push({
+              'title': {
+                'zh-tw':title,
+                'en': null
+              },
               'rating': rating,
               'showtimesDay': showtimesDay,
               'cinemaType': _.uniq(cinemaType)
+            });
+          });
+          console.log("[VieshowCrawler] Theater: %s, Success!", _theaterId);
+          VieshowCrawler.getShowtimes_E(_theaterId).then(function(showtimes_e) {
+            _.map(showtimes_c, function(st, idx) {
+              st.title.en = showtimes_e[idx].title.en.trim();
+            })
+
+            resolve(showtimes_c);
+          })
+        },
+        failure: function(page) {
+          console.log("[VieshowCrawler] page status: ", page.status);
+          reject([])
+        }
+      });
+    })
+    return promise
+  },
+  getShowtimes_E: function (_theaterId) {
+    console.log("[VieshowCrawler] EN getShowtimes() from theaterId: %s", _theaterId);
+    var crawler = new Crawler();
+    var promise = new Promise(function (resolve, reject) {
+      crawler.crawl({
+        url: "http://www.vscinemas.com.tw/visPrintShowTimes.aspx?cid=" + _theaterId + "&visLang=1",
+        success: function(page) {
+          var html = page.content.toString();
+          var $ = Cheerio.load(html);
+          var tables = $('.PrintShowTimesFilm').parent().parent().parent().find('table');
+          var showtimes = [];
+          _.map(tables, function(table, idx) {
+            var title = $(table).find('.PrintShowTimesFilm').text()
+            title = title.split('\)')[1];
+            title = title.split('\(')[0].toLowerCase();
+
+            showtimes.push({
+              'title': {
+                'en': title
+              }
             });
           });
           console.log("[VieshowCrawler] Theater: %s, Success!", _theaterId);
