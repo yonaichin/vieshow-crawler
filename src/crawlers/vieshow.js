@@ -44,7 +44,7 @@ var VieshowCrawler = {
   },
   getShowtimes_C: function (_theaterId) {
     console.log("[VieshowCrawler] getShowtimes() from theaterId: %s", _theaterId);
-    var crawler = new Crawler();
+    var crawler = new Crawler().configure({ maxRequestsPerSecond: 10 });
     var promise = new Promise(function (resolve, reject) {
       crawler.crawl({
         url: "http://www.vscinemas.com.tw/visPrintShowTimes.aspx?cid=" + _theaterId + "&visLang=2",
@@ -95,7 +95,7 @@ var VieshowCrawler = {
           resolve(showtimes_c);
         },
         failure: function(page) {
-          console.log("[VieshowCrawler] page status: ", page.status);
+          console.log("[VieshowCrawler] Failed! TheaterId %s, page status: %s ", _theaterId, page.status);
           reject([])
         }
       });
@@ -104,7 +104,7 @@ var VieshowCrawler = {
   },
   getShowtimes_E: function (_theaterId) {
     console.log("[VieshowCrawler] EN getShowtimes() from theaterId: %s", _theaterId);
-    var crawler = new Crawler();
+    var crawler = new Crawler().configure({ maxRequestsPerSecond: 10 });
     var promise = new Promise(function (resolve, reject) {
       crawler.crawl({
         url: "http://www.vscinemas.com.tw/visPrintShowTimes.aspx?cid=" + _theaterId + "&visLang=1",
@@ -128,7 +128,7 @@ var VieshowCrawler = {
           resolve(showtimes);
         },
         failure: function(page) {
-          console.log("[VieshowCrawler] page status: ", page.status);
+          console.log("[VieshowCrawler] Failed! TheaterId %s, page status: %s ", _theaterId, page.status);
           reject([])
         }
       });
@@ -136,7 +136,7 @@ var VieshowCrawler = {
     return promise
   },
   getListDicArea: function () {
-    var crawler = new Crawler();
+    var crawler = new Crawler().configure({ maxRequestsPerSecond: 10 });
     var promise = new Promise(function (resolve, reject) {
       crawler.crawl({
         url: "https://www.vscinemas.com.tw/api/GetLstDicArea/",
@@ -160,7 +160,7 @@ var VieshowCrawler = {
     return promise
   },
   getLstDicMovie: function (_theaterId) {
-    var crawler = new Crawler();
+    var crawler = new Crawler().configure({ maxRequestsPerSecond: 10 });
     var promise = new Promise(function (resolve, reject) {
       crawler.crawl({
         url: "https://www.vscinemas.com.tw/api/GetLstDicMovie/?cinema=" + TheaterMap[_theaterId]['cinemaId'],
@@ -216,9 +216,11 @@ var VieshowCrawler = {
               imgUrl: imgUrl
             })
           })
+          console.log("[VieshowCrawler] Posters Crawler Success! PageIndex: %s Page status: ", pageIndex);
           resolve(posters)
         },
         failure: function(page) {
+          console.log("[VieshowCrawler] Posters Crawler Failed! PageIndex: %s Page status: ", pageIndex, page.status);
           reject([])
         }
       });
