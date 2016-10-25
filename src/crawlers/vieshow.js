@@ -9,25 +9,38 @@ var TheaterMap = require('../data/theater_map.js');
 var VieshowCrawler = {
 
   getShowtimes: function (_theaterId) {
-    return new Promise.all([VieshowCrawler.getShowtimes_C(_theaterId), VieshowCrawler.getShowtimes_E(_theaterId), VieshowCrawler.getLstDicMovie(_theaterId)]).then(function(res) {
-      var showtimes_c = res[0]
-      var showtimes_e = res[1]
-      var movies = res[2]
-      var showtimes = new Promise(function(resolve, reject) {
-        _.map(showtimes_c, function(st, idx) {
-          var movie = _.find(movies, function(o) {
-            return o.text == st.title['original']
-          });
-          st.title.en = showtimes_e[idx].title.en
-          st.movieId = movie['cinemaId']
+    return new Promise
+      .all([
+        VieshowCrawler.getShowtimes_C(_theaterId),
+        VieshowCrawler.getShowtimes_E(_theaterId),
+        VieshowCrawler.getLstDicMovie(_theaterId),
+        VieshowCrawler.getPosters()
+        ])
+      .then(function(res) {
+        var showtimes_c = res[0]
+        var showtimes_e = res[1]
+        var movies = res[2]
+        var posters = res[3]
+        var showtimes = new Promise(function(resolve, reject) {
+          _.map(showtimes_c, function(st, idx) {
+            var movie = _.find(movies, function(o) {
+              return o.text == st.title['original']
+            });
+            var poster = _.find(posters, function(o) {
+              return o.title == st.title['zh-tw']
+            });
 
-          if ((idx + 1 ) === showtimes_c.length) {
-            resolve(showtimes_c)
-          }
+            st.title.en = showtimes_e[idx].title.en
+            st.movieId = movie['cinemaId']
+            st.poster = poster['imgUrl']
+
+            if ((idx + 1 ) === showtimes_c.length) {
+              resolve(showtimes_c)
+            }
+          })
         })
+        return showtimes
       })
-      return showtimes
-    })
   },
   getShowtimes_C: function (_theaterId) {
     console.log("[VieshowCrawler] getShowtimes() from theaterId: %s", _theaterId);
@@ -72,9 +85,10 @@ var VieshowCrawler = {
                 'en': null
               },
               'rating': rating,
-              'showtimesDay': showtimesDay,
               'cinemaType': _.uniq(cinemaType),
-              'movieId': null
+              'showtimesDay': showtimesDay,
+              'movieId': null,
+              'poster': null
             });
           });
           console.log("[VieshowCrawler] Theater: %s, Success!", _theaterId);
@@ -172,6 +186,44 @@ var VieshowCrawler = {
         }
       });
     })
+    return promise
+  },
+  getPosters: function () {
+    return new Promise.all([VieshowCrawler.getMoviePostersByIndex('1'),VieshowCrawler.getMoviePostersByIndex('2'),VieshowCrawler.getMoviePostersByIndex('3')])
+      .then(function (res) {
+          var posters = new Promise(function(resolve, reject) {
+            var posterArr = _.uniq(res[0].concat(res[1].concat(res[2])))
+            resolve(posterArr)
+        })
+        return posters
+      })
+  },
+  getMoviePostersByIndex: function (pageIndex) {
+    var crawler = new Crawler();
+    var promise = new Promise(function (resolve, reject) {
+      crawler.crawl({
+        url: "https://www.vscinemas.com.tw/film/index.aspx?p=" + pageIndex,
+        success: function(page) {
+          var html = page.content.toString();
+          var $ = Cheerio.load(html);
+          var movieList = $('.movieList img');
+          var posters = []
+          _.map(movieList, function(movie) {
+            var imgUrl = 'https://www.vscinemas.com.tw/' + $(movie).attr('src').split(/\.\.\//)[1]
+            var title =  $(movie).attr('title').replace(/ /g, '')
+            posters.push({
+              title: title,
+              imgUrl: imgUrl
+            })
+          })
+          resolve(posters)
+        },
+        failure: function(page) {
+          reject([])
+        }
+      });
+    })
+
     return promise
   }
 };
