@@ -8,31 +8,29 @@ var TheaterMap = require('../data/theater_map.js');
 
 var VieshowCrawler = {
 
-  getShowtimes: function (_theaterId) {
+  getShowtimes: function (_theaterId, posters) {
     return new Promise
       .all([
         VieshowCrawler.getShowtimes_C(_theaterId),
         VieshowCrawler.getShowtimes_E(_theaterId),
-        VieshowCrawler.getLstDicMovie(_theaterId),
-        // VieshowCrawler.getPosters()
+        VieshowCrawler.getLstDicMovie(_theaterId)
         ])
       .then(function(res) {
         var showtimes_c = res[0]
         var showtimes_e = res[1]
         var movies = res[2]
-        // var posters = res[3]
         var showtimes = new Promise(function(resolve, reject) {
           _.map(showtimes_c, function(st, idx) {
             var movie = _.find(movies, function(o) {
               return o.text == st.title['original']
             });
-            // var poster = _.find(posters, function(o) {
-            //   return o.title == st.title['zh-tw']
-            // });
+            var poster = _.find(posters, function(o) {
+              return o.title == st.title['zh-tw']
+            });
 
             st.title.en = showtimes_e[idx].title.en
             st.movieId = movie['cinemaId']
-            // st.poster = poster['imgUrl']
+            st.poster = poster['imgUrl']
 
             if ((idx + 1 ) === showtimes_c.length) {
               resolve(showtimes_c)
@@ -189,17 +187,13 @@ var VieshowCrawler = {
     return promise
   },
   getPosters: function () {
-    return new Promise.all([VieshowCrawler.getMoviePostersByIndex('1'),VieshowCrawler.getMoviePostersByIndex('2'),VieshowCrawler.getMoviePostersByIndex('3')])
+    return new Promise.all([VieshowCrawler.getMoviePostersByIndex('1'),VieshowCrawler.getMoviePostersByIndex('2')])
       .then(function (res) {
-          var posters = new Promise(function(resolve, reject) {
-            var posterArr = _.uniq(res[0].concat(res[1].concat(res[2])))
-            resolve(posterArr)
-        })
-        return posters
+        return res[0].concat(res[1])
       })
   },
   getMoviePostersByIndex: function (pageIndex) {
-    var crawler = new Crawler();
+    var crawler = new Crawler().configure({ maxRequestsPerSecond: 5, maxConcurrentRequests: 1, ignoreRelative: true, depth:1});
     var promise = new Promise(function (resolve, reject) {
       crawler.crawl({
         url: "https://www.vscinemas.com.tw/film/index.aspx?p=" + pageIndex,
