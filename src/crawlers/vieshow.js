@@ -14,25 +14,25 @@ var VieshowCrawler = {
         VieshowCrawler.getShowtimes_C(_theaterId),
         VieshowCrawler.getShowtimes_E(_theaterId),
         VieshowCrawler.getLstDicMovie(_theaterId),
-        VieshowCrawler.getPosters()
+        // VieshowCrawler.getPosters()
         ])
       .then(function(res) {
         var showtimes_c = res[0]
         var showtimes_e = res[1]
         var movies = res[2]
-        var posters = res[3]
+        // var posters = res[3]
         var showtimes = new Promise(function(resolve, reject) {
           _.map(showtimes_c, function(st, idx) {
             var movie = _.find(movies, function(o) {
               return o.text == st.title['original']
             });
-            var poster = _.find(posters, function(o) {
-              return o.title == st.title['zh-tw']
-            });
+            // var poster = _.find(posters, function(o) {
+            //   return o.title == st.title['zh-tw']
+            // });
 
             st.title.en = showtimes_e[idx].title.en
             st.movieId = movie['cinemaId']
-            st.poster = poster['imgUrl']
+            // st.poster = poster['imgUrl']
 
             if ((idx + 1 ) === showtimes_c.length) {
               resolve(showtimes_c)
@@ -216,7 +216,7 @@ var VieshowCrawler = {
               imgUrl: imgUrl
             })
           })
-          console.log("[VieshowCrawler] Posters Crawler Success! PageIndex: %s Page status: ", pageIndex);
+          console.log("[VieshowCrawler] Posters Crawler Success! PageIndex: %s ", pageIndex);
           resolve(posters)
         },
         failure: function(page) {
