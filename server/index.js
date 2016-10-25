@@ -1,11 +1,11 @@
-var express     = require('express');
-var cors        = require('cors');
-var _           = require('lodash');
-var Promise     = require('promise');
+var express = require('express');
+var cors    = require('cors');
+var _       = require('lodash');
+var Promise = require('promise');
 
 
-var Theater     = require('../src/theater.js');
-var DB          = require('../db/index.js');
+var Theater = require('../src/theater.js');
+var DB      = require('../db/index.js');
 
 var app         = express();
 
