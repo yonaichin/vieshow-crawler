@@ -1,7 +1,7 @@
 var sqlite3     = require('sqlite3').verbose();
 var db          = new sqlite3.Database('./db/vieshow.db');
 var Theater     = require('../src/theater.js');
-var TheaterList = require('../src/data/theater_list.js');
+var TheaterMap  = require('../src/data/theater_map.js');
 var _           = require('lodash');
 
 var DB = {
@@ -16,15 +16,15 @@ var DB = {
   },
   createTable: function () {
     console.log('[DB] Creating tables');
-    _.map(TheaterList, function(theater) {
-      db.run("CREATE TABLE IF NOT EXISTS " + theater.value + " (info TEXT)");
+    _.map(TheaterMap, function(theater, key) {
+      db.run("CREATE TABLE IF NOT EXISTS " + key + " (info TEXT)");
     });
   },
   prepareData: function () {
     console.log('[DB] Preparing datas');
-    _.map(TheaterList, function(theater) {
-      var stmt = db.prepare("INSERT INTO " + theater.value + " VALUES (?)");
-      Theater.getShowtimes(theater.value).then(function (showtimes) {
+    _.map(TheaterMap, function(theater, key) {
+      var stmt = db.prepare("INSERT INTO " + key + " VALUES (?)");
+      Theater.getShowtimes(key).then(function (showtimes) {
         stmt.run(JSON.stringify(showtimes));
         stmt.finalize();
       })
@@ -38,9 +38,9 @@ var DB = {
     })
   },
   truncateAll: function () {
-    _.map(TheaterList, function(theater) {
-      console.log('delete table', theater.value);
-      db.run("DROP TABLE " + theater.value);
+    _.map(TheaterMap, function(theater, key) {
+      console.log('delete table', key);
+      db.run("DROP TABLE " + key);
     })
     setTimeout(function(){
       console.log('[DB] Reinitializing...')

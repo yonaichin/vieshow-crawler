@@ -1,10 +1,35 @@
-var Crawler = require("js-crawler");
-var Cheerio = require("cheerio");
-var _       = require('lodash');
-var Promise = require('promise');
+var Crawler     = require("js-crawler");
+var Cheerio     = require("cheerio");
+var _           = require('lodash');
+var Promise     = require('promise');
+
+var TheaterMap = require('../data/theater_map.js');
+
 
 var VieshowCrawler = {
+
   getShowtimes: function (_theaterId) {
+    return new Promise.all([VieshowCrawler.getShowtimes_C(_theaterId), VieshowCrawler.getShowtimes_E(_theaterId), VieshowCrawler.getLstDicMovie(_theaterId)]).then(function(res) {
+      var showtimes_c = res[0]
+      var showtimes_e = res[1]
+      var movies = res[2]
+      var showtimes = new Promise(function(resolve, reject) {
+        _.map(showtimes_c, function(st, idx) {
+          var movie = _.find(movies, function(o) {
+            return o.text == st.title['original']
+          });
+          st.title.en = showtimes_e[idx].title.en
+          st.movieId = movie['cinemaId']
+
+          if ((idx + 1 ) === showtimes_c.length) {
+            resolve(showtimes_c)
+          }
+        })
+      })
+      return showtimes
+    })
+  },
+  getShowtimes_C: function (_theaterId) {
     console.log("[VieshowCrawler] getShowtimes() from theaterId: %s", _theaterId);
     var crawler = new Crawler();
     var promise = new Promise(function (resolve, reject) {
@@ -33,6 +58,7 @@ var VieshowCrawler = {
               rating = 'R';
             }
             title = title.replace(/\(普遍級\)|\(保護級\)|\(輔12級\)|\(輔15級\)|\(限制級\)|/g, '');
+            var originalTitle = title.trim().replace(/ /g, '');
 
             // filter cinemaType
             label = title.split('\)')[0];
@@ -41,22 +67,18 @@ var VieshowCrawler = {
 
             showtimes_c.push({
               'title': {
+                'original': originalTitle,
                 'zh-tw':title,
                 'en': null
               },
               'rating': rating,
               'showtimesDay': showtimesDay,
-              'cinemaType': _.uniq(cinemaType)
+              'cinemaType': _.uniq(cinemaType),
+              'movieId': null
             });
           });
           console.log("[VieshowCrawler] Theater: %s, Success!", _theaterId);
-          VieshowCrawler.getShowtimes_E(_theaterId).then(function(showtimes_e) {
-            _.map(showtimes_c, function(st, idx) {
-              st.title.en = showtimes_e[idx].title.en.trim();
-            })
-
-            resolve(showtimes_c);
-          })
+          resolve(showtimes_c);
         },
         failure: function(page) {
           console.log("[VieshowCrawler] page status: ", page.status);
@@ -80,7 +102,7 @@ var VieshowCrawler = {
           _.map(tables, function(table, idx) {
             var title = $(table).find('.PrintShowTimesFilm').text()
             title = title.split('\)')[1];
-            title = title.split('\(')[0].toLowerCase();
+            title = title.split('\(')[0].toLowerCase().trim();
 
             showtimes.push({
               'title': {
@@ -122,6 +144,35 @@ var VieshowCrawler = {
       });
     })
     return promise
+  },
+  getLstDicMovie: function (_theaterId) {
+    var crawler = new Crawler();
+    var promise = new Promise(function (resolve, reject) {
+      crawler.crawl({
+        url: "https://www.vscinemas.com.tw/api/GetLstDicMovie/?cinema=" + TheaterMap[_theaterId]['cinemaId'],
+        success: function(page) {
+          var json = page.content.toString();
+          try {
+            json = JSON.parse(json)
+            var lstDicMovie = _.map(json, function(j) {
+              return {
+                'text': j.strText.replace(/ /g,''),
+                'cinemaId': j.strValue
+              }
+            })
+            resolve(lstDicMovie);
+          } catch (err) {
+            console.log('error: ', err);
+            reject([]);
+          }
+        },
+        failure: function(page) {
+          console.log("[VieshowCrawler] page status: ", page.status);
+          reject([]);
+        }
+      });
+    })
+    return promise
   }
 };
 
@@ -151,6 +202,12 @@ function _getCinemaType (label) {
   }
   if (label.indexOf('3D') > 0) {
     cinemaType.push('3d');
+  }
+  if (label.indexOf('未來3D') > 0) {
+    cinemaType.push('futuristic 3d');
+    cinemaType = _.filter(cinemaType, function(n) {
+      return n !== '3d';
+    })
   }
   if (label.indexOf('4D') > 0) {
     cinemaType.push('4d');

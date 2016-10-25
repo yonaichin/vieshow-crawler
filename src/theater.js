@@ -1,4 +1,4 @@
-var theaterList    = require('./data/theater_list.js');
+var theaterMap     = require('./data/theater_map.js');
 var VieshowCrawler = require('./crawlers/vieshow.js');
 var Promise        = require('promise');
 
@@ -7,7 +7,7 @@ var Theater = {
     console.log('Theater init');
   },
   getTheaters: function () {
-    return theaterList;
+    return theaterMap;
   },
   getShowtimes: function (theater_id) {
     return new Promise (function (resolve, reject) {
