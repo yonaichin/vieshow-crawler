@@ -12,9 +12,10 @@ var VieshowCrawler = {
     return new Promise.all([VieshowCrawler.getShowtimes_C(_theaterId), VieshowCrawler.getShowtimes_E(_theaterId), VieshowCrawler.getLstDicMovie(_theaterId)]).then(function(res) {
       var showtimes_c = res[0]
       var showtimes_e = res[1]
+      var movies = res[2]
       var showtimes = new Promise(function(resolve, reject) {
         _.map(showtimes_c, function(st, idx) {
-          var movie = _.find(res[2], function(o) {
+          var movie = _.find(movies, function(o) {
             return o.text == st.title['original']
           });
           st.title.en = showtimes_e[idx].title.en
