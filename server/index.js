@@ -4,7 +4,6 @@ var _           = require('lodash');
 var Promise     = require('promise');
 
 
-var TheaterList = require('../src/data/theater_list.js');
 var Theater     = require('../src/theater.js');
 var DB          = require('../db/index.js');
 
@@ -41,8 +40,8 @@ app.get('/theater/:theaterId', function (req, res) {
   var _theaterId = req.params.theaterId;
   var theaters = Theater.getTheaters();
   var matchTheaters = false;
-  _.map(theaters, function(theater) {
-    if (theater.value == _theaterId) {
+  _.map(theaters, function(theater, key) {
+    if (key == _theaterId) {
       matchTheaters = true;
     }
   });
