@@ -9,9 +9,20 @@ var Theater = {
   getTheaters: function () {
     return theaterMap;
   },
-  getShowtimes: function (theater_id) {
+  getPosters: function () {
     return new Promise (function (resolve, reject) {
-      VieshowCrawler.getShowtimes(theater_id).then(function(res, err) {
+      VieshowCrawler.getPosters().then(function(res, err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+        }
+      });
+    })
+  },
+  getShowtimes: function (theater_id, posters) {
+    return new Promise (function (resolve, reject) {
+      VieshowCrawler.getShowtimes(theater_id, posters).then(function(res, err) {
         if (err) {
           reject(err);
         } else {

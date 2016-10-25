@@ -22,13 +22,16 @@ var DB = {
   },
   prepareData: function () {
     console.log('[DB] Preparing datas');
-    _.map(TheaterMap, function(theater, key) {
-      var stmt = db.prepare("INSERT INTO " + key + " VALUES (?)");
-      Theater.getShowtimes(key).then(function (showtimes) {
-        stmt.run(JSON.stringify(showtimes));
-        stmt.finalize();
-      })
-    });
+    Theater.getPosters().then(function(posters) {
+      _.map(TheaterMap, function(theater, key) {
+        var stmt = db.prepare("INSERT INTO " + key + " VALUES (?)");
+        Theater.getShowtimes(key, posters).then(function (showtimes) {
+          stmt.run(JSON.stringify(showtimes));
+          stmt.finalize();
+        })
+      });
+
+    })
   },
   getShowtimes: function (_theaterId) {
     return new Promise(function (resolve, reject) {
