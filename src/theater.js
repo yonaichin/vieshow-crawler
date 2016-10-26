@@ -31,6 +31,17 @@ var Theater = {
       });
     })
   },
+  getTicketUrl: function (payload) {
+    return new Promise (function (resolve, reject) {
+      VieshowCrawler.getTicketUrl(payload).then(function(res, err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+        }
+      });
+    })
+  },
   getListDicArea: function () {
     return new Promise (function (resolve, reject) {
       VieshowCrawler.getListDicArea().then(function(res, err) {

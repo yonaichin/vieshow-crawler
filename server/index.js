@@ -1,15 +1,23 @@
-var express = require('express');
-var cors    = require('cors');
-var _       = require('lodash');
-var Promise = require('promise');
+var express    = require('express');
+var bodyParser = require('body-parser');
+var cors       = require('cors');
+var _          = require('lodash');
+var Promise    = require('promise');
 
 
-var Theater = require('../src/theater.js');
-var DB      = require('../db/index.js');
+var Theater    = require('../src/theater.js');
+var DB         = require('../db/index.js');
 
-var app         = express();
+var app = express();
 
 app.use(cors());
+
+// bodyParser
+app.use(bodyParser.json());
+app.use (function (error, req, res, next){
+  //Catch bodyParser json error
+  res.status(400).json({'error': "Proper JSON payload is required."});
+});
 
 app.set('port', (process.env.PORT || 3000));
 
@@ -26,15 +34,15 @@ app.get('/theater', function (req, res) {
   res.json(Theater.getTheaters());
 });
 
-app.get('/api/getListDicArea', function (req, res) {
-  Theater.getListDicArea().then(function (list, err) {
-    if (err) {
-      res.json([])
-    } else {
-      res.json(list);
-    }
-  });
-});
+// app.get('/api/getListDicArea', function (req, res) {
+//   Theater.getListDicArea().then(function (list, err) {
+//     if (err) {
+//       res.json([])
+//     } else {
+//       res.json(list);
+//     }
+//   });
+// });
 
 app.get('/theater/:theaterId', function (req, res) {
   var _theaterId = req.params.theaterId;
@@ -55,6 +63,30 @@ app.get('/theater/:theaterId', function (req, res) {
   }
 
 });
+
+app.post('/ticket', function (req, res) {
+  var payload = req.body
+
+  if (!_.has(payload, 'cinemaId')) {
+    res.status(400).json({'error': "payload [cinemaId] required."});
+  } else if (!_.has(payload, 'movieId')) {
+    res.status(400).json({'error': "payload [movieId] required."});
+  } else if (!_.has(payload, 'ticketDate')) {
+    res.status(400).json({'error': "payload [ticketDate] required."});
+  } else if ((new Date(payload.ticketDate)) == 'Invalid Date') {
+    res.status(400).json({'error': "ticketDate is invalid."});
+  } else {
+    Theater.getTicketUrl(payload).then(function (urls, err) {
+      if (err) {
+        res.json([])
+      } else {
+        res.json(urls);
+      }
+    });
+  }
+
+});
+
 
 app.get('/*', function (req, res) {
   res.redirect('/');

@@ -1,9 +1,10 @@
 {
   "name": "vieshow-crawler",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "nodejs crawler project",
   "main": "crawler.js",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "cheerio": "^0.22.0",
     "cors": "^2.8.1",
     "ejs": "^2.5.2",
