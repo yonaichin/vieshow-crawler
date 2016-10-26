@@ -1,0 +1,66 @@
+<div>
+  <blockquote>
+    <h5>Get Ticket Url</h5>
+    Get Ticket Booking Url
+    <ul>
+      <li>METHOD: POST</li>
+      <li>URL: https://vieshow-showtime.herokuapp.com/post </li>
+    </ul>
+  </blockquote>
+  <div class="section">
+    <h5>Request Payload: </h5>
+    <table class="highlight bordered">
+      <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>cinemaId</td>
+          <td>String</td>
+          <td>影城代碼</td>
+        </tr>
+        <tr>
+          <td>movieId</td>
+          <td>String</td>
+          <td>電影代碼</td>
+        </tr>
+        <tr>
+          <td>ticketDate</td>
+          <td>String</td>
+          <td>訂票日期</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <h5>Response Payload: </h5>
+    <table class="highlight bordered">
+      <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>session</td>
+          <td>String</td>
+          <td>電影時刻</td>
+        </tr>
+        <tr>
+          <td>ticketUrl</td>
+          <td>String</td>
+          <td>訂票網址</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+

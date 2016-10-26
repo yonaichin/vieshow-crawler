@@ -157,6 +157,36 @@ var VieshowCrawler = {
     })
     return promise
   },
+  getTicketUrl: function (payload) {
+    var crawler = new Crawler().configure({ maxRequestsPerSecond: 10 });
+    var promise = new Promise(function (resolve, reject) {
+      crawler.crawl({
+        url: "https://www.vscinemas.com.tw/api/GetLstDicSession/?cinema=" + payload.cinemaId + "&movie=" + payload.movieId + "&date=" + payload.ticketDate,
+        success: function(page) {
+          console.log('Get Ticked success.', JSON.stringify(payload));
+          var json = page.content.toString();
+          try {
+            json = JSON.parse(json)
+            var url = _.map(json, function(j) {
+              return ({
+                'session': j.strText,
+                'ticketUrl': 'http://www.vscinemas.com.tw/vsTicketing/ticketing/booking.aspx?' + j.strValue
+              })
+            })
+            resolve(url);
+          } catch (err) {
+            console.log('error: ', err);
+            reject([]);
+          }
+        },
+        failure: function(page) {
+          console.log("[VieshowCrawler] getTicketUrl failed!", JSON.stringify(payload));
+          reject([]);
+        }
+      });
+    })
+    return promise
+  },
   getLstDicMovie: function (_theaterId) {
     var crawler = new Crawler().configure({ maxRequestsPerSecond: 10 });
     var promise = new Promise(function (resolve, reject) {
