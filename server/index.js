@@ -20,9 +20,10 @@ app.use(bot.webhook('/webhook'));
 
 bot.on(LINEBot.Events.MESSAGE, function(replyToken, message) {
   console.log('user message: ', message.getText());
-  var msg = message.getText();
   var timestamp = (new Date()).toLocaleString()
-  bot.replyTextMessage(replyToken, '收到你的訊息啦：%s, 我們會盡快上線，現在時間 %s', msg, timestamp).then(function(data) {
+  var msg = '收到你的訊息啦：[' + message.getText() + '], 我們會盡快上線，現在時間 ' + timestamp;
+
+  bot.replyTextMessage(replyToken, msg).then(function(data) {
     // add your code when success.
   }).catch(function(error) {
     // add your code when error.
