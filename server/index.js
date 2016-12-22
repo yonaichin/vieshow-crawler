@@ -17,9 +17,10 @@ var bot = LINEBot.create({
   channelToken: 'C8G8tUU68AF0D5iayC8TdMtCp9diT09BBfSQPzeYOFkPB4Pt7KIYjMmtfu37Mt1sPwiffFy6VvGkGUPvDhL4pRYCxIpjJ3Dl+81VbUAp2b6t72cf8o3GItBvQc8z6U5YxkQSsJRhzONyTslHpQmNZQdB04t89/1O/w1cDnyilFU='
 }, server);
 app.use(bot.webhook('/webhook'));
+
 bot.on(LINEBot.Events.MESSAGE, function(replyToken, message) {
-  console.log('user message: ', message);
-  bot.replyTextMessage('<reply token>', 'hello!').then(function(data) {
+  console.log('user message: ', message.getText());
+  bot.replyTextMessage(replyToken, message.getText() + 'helloworld!').then(function(data) {
     // add your code when success.
   }).catch(function(error) {
     // add your code when error.
