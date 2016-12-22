@@ -36,14 +36,19 @@ var DB = {
   getShowtimes: function (_theaterId) {
     return new Promise(function (resolve, reject) {
       db.get("SELECT rowid AS id, info FROM " + _theaterId + " ORDER BY rowid DESC LIMIT 1", function(err, row) {
-        resolve(JSON.parse(row.info));
+        if (row === undefined) {
+          console.log('undefined', _theaterId)
+          resolve({});
+        } else {
+          resolve(JSON.parse(row.info));
+        }
       });
     })
   },
   truncateAll: function () {
     _.map(TheaterMap, function(theater, key) {
       console.log('delete table', key);
-      db.run("DROP TABLE " + key);
+      db.run("DROP TABLE IF EXISTS " + key);
     })
     setTimeout(function(){
       console.log('[DB] Reinitializing...')
