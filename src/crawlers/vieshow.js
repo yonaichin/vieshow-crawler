@@ -90,9 +90,6 @@ var VieshowCrawler = {
             });
           });
           console.log("[VieshowCrawler] Theater: %s, Success!", _theaterId);
-          if (_theaterId == 'BC') {
-            console.log('****', JSON.stringify(showtimes_c))
-          }
           resolve(showtimes_c);
         },
         failure: function(page) {

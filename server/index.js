@@ -3,12 +3,29 @@ var bodyParser = require('body-parser');
 var cors       = require('cors');
 var _          = require('lodash');
 var Promise    = require('promise');
+var LINEBot    = require('line-messaging');
 
 
 var Theater    = require('../src/theater.js');
 var DB         = require('../db/index.js');
 
 var app = express();
+var server = require('http').Server(app);
+var bot = LINEBot.create({
+  channelID: '1493441304',
+  channelSecret: '44f2a25f46d7100c16726e8940c52167',
+  channelToken: 'C8G8tUU68AF0D5iayC8TdMtCp9diT09BBfSQPzeYOFkPB4Pt7KIYjMmtfu37Mt1sPwiffFy6VvGkGUPvDhL4pRYCxIpjJ3Dl+81VbUAp2b6t72cf8o3GItBvQc8z6U5YxkQSsJRhzONyTslHpQmNZQdB04t89/1O/w1cDnyilFU='
+}, server);
+app.use(bot.webhook('/webhook'));
+bot.on(LINEBot.Events.MESSAGE, function(replyToken, message) {
+  console.log('user message: ', message);
+  bot.replyTextMessage('<reply token>', 'hello!').then(function(data) {
+    // add your code when success.
+  }).catch(function(error) {
+    // add your code when error.
+  });
+  // add code below.
+});
 
 app.use(cors());
 
@@ -97,9 +114,10 @@ Promise.resolve()
     DB.init();
   })
   .finally(function () {
-    app.listen(app.get('port'), function() {
-      console.log('VIESHOW crawler now running on http://localhost:' + app.get('port'));
-    });
+    // app.listen(app.get('port'), function() {
+    //   console.log('VIESHOW crawler now running on http://localhost:' + app.get('port'));
+    // });
+    server.listen(app.get('port'));
   })
 
 
