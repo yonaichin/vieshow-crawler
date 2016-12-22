@@ -23,7 +23,7 @@ bot.on(LINEBot.Events.MESSAGE, function(replyToken, message) {
   var timestamp = (new Date()).toLocaleString()
   var msg = '收到你的訊息啦：[' + message.getText() + '], 我們會盡快上線，現在時間 ' + timestamp;
 
-  bot.replyTextMessage(replyToken, msg).then(function(data) {
+  bot.replyTextMessage(replyToken, '收到你的訊息啦 我們會盡快上線').then(function(data) {
     // add your code when success.
   }).catch(function(error) {
     // add your code when error.
